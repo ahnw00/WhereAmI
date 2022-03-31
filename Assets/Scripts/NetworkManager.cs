@@ -9,9 +9,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 {
     public InputField NickNameInput;
     public GameObject DisconnectPanel;
-    public GameObject RespawnPanel;
+    //public GameObject RespawnPanel;
 
-     void Awake()
+    void Awake()
     {
         Screen.SetResolution(1920, 1080, false);
         PhotonNetwork.SendRate = 60;
@@ -29,13 +29,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         DisconnectPanel.SetActive(false);
-        Spawn();
+        //Spawn();
     }
 
     public void Spawn()
     {
-        PhotonNetwork.Instantiate("Player", new Vector3(Random.Range(-6f, 19f), 4, 0), Quaternion.identity);
-        RespawnPanel.SetActive(false);
+        //PhotonNetwork.Instantiate("Player", new Vector3(Random.Range(-6f, 19f), 4, 0), Quaternion.identity);
+        //RespawnPanel.SetActive(false);
     }
 
     void Update() 
@@ -49,6 +49,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnDisconnected(DisconnectCause cause)
     {
         DisconnectPanel.SetActive(true);
-        RespawnPanel.SetActive(false);
+        //RespawnPanel.SetActive(false);
     }
 }
