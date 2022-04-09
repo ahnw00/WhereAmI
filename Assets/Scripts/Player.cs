@@ -60,7 +60,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void JumpRPC()
     {
-        RB.AddForce(Vector3.up * 300);
+        RB.AddForce(Vector3.up * 20f, ForceMode.Impulse);
     }
 
     // public void Hit()
