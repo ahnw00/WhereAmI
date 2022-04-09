@@ -35,11 +35,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Spawn()
     {
-        GameObject player = PhotonNetwork.Instantiate("Player", new Vector3(Random.Range(60, 96), 80f, Random.Range(-3, 32)), Quaternion.Euler(new Vector3(-90, 0, -90)));
-        Camera mainCamera = FindObjectOfType<Camera>();
-        mainCamera.transform.SetParent(player.transform);
-        mainCamera.transform.localPosition = new Vector3(-15, 0, 10);
-        mainCamera.transform.localRotation = Quaternion.Euler(0, 110f, 90f);
+        PhotonNetwork.Instantiate("PlayerObject", new Vector3(Random.Range(60, 96), 80f, Random.Range(-3, 32)), Quaternion.identity);
     }
 
     void Update() 
