@@ -11,12 +11,14 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public Animator AN;
     public PhotonView PV;
     public TextMeshPro NickNameText;
+    public Transform cameraArm; 
+    public Transform playerTr;
 
+    bool isJump = false;
     float speed = 4f;
-    int numOfContactedCol;
     Vector3 curPos;
-
-
+    Vector2 moveInput;
+    Vector2 mouseDelta;
 
     void Awake()
     {
@@ -25,15 +27,22 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
     }
 
+    void Start()
+    {
+        Camera mainCamera = FindObjectOfType<Camera>();
+        mainCamera.transform.SetParent(cameraArm);
+        mainCamera.transform.localPosition = new Vector3(0, 1.2f, -3f);
+        mainCamera.transform.localRotation = Quaternion.Euler(new Vector3(10, 0, 0));
+    }
 
     void Update()
     {
         if (PV.IsMine)
         {
+            GetInput();
+            LookAt();
             // 앞뒤좌우 이동
-            float horizontalAxis = Input.GetAxisRaw("Horizontal");
-            float verticalAxis = Input.GetAxisRaw("Vertical");
-            RB.velocity = new Vector3(speed * horizontalAxis, 0, speed * verticalAxis);
+            Move();
 
             // if (horizontalAxis != 0 || verticalAxis != 0)
             // {
@@ -42,11 +51,10 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             // else AN.SetBool("walk", false);
 
 
-            // ↑ 점프, 바닥체크
-            Collider[] results = new Collider[1];
-            numOfContactedCol = Physics.OverlapSphereNonAlloc((Vector3)transform.position + new Vector3(0, -0.5f, 0), 0.07f, results, 1 << LayerMask.NameToLayer("Ground"));
-            if (Input.GetKeyDown(KeyCode.Space) && numOfContactedCol == 1) 
+            // ↑ 점프
+            if (Input.GetKeyDown(KeyCode.Space) && !isJump) 
             {
+                isJump = true;
                 //AN.SetBool("jump", true);
                 PV.RPC("JumpRPC", RpcTarget.All);
             }
@@ -57,10 +65,65 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         else transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
     }
 
+    public void OnCollisionEnter(Collision collision) // 충돌 감지, collision은 그 충돌체가 누구인지
+    {
+        if(collision.gameObject.tag == "Ground")
+        {
+            isJump = false;
+        }
+    }
+
+    private void GetInput()
+    {
+        float x = Input.GetAxisRaw("Horizontal");
+        float y = Input.GetAxisRaw("Vertical");
+
+        moveInput = new Vector2(x, y);
+
+        x = Input.GetAxis("Mouse X");
+        y = Input.GetAxis("Mouse Y");
+
+        mouseDelta = new Vector2(x, y);
+
+        // isKeyDown[(int)DownKey.JUMP] = Input.GetButtonDown("Jump");
+        // isKeyDown[(int)DownKey.RUN] = Input.GetButton("Run");
+        // isKeyDown[(int)DownKey.PICK] = Input.GetButtonDown("Pick");
+        // isKeyDown[(int)DownKey.SWAP1] = Input.GetButtonDown("SwapGun");
+        // isKeyDown[(int)DownKey.SWAP3] = Input.GetButtonDown("SwapKnife");
+
+        //attackDelay += Time.deltaTime;
+    }
+    private void LookAt()
+    {
+        // 현재 내 카메라의 각도를 구해오고
+        Vector3 cameraAngle = cameraArm.rotation.eulerAngles;
+
+        float x = cameraAngle.x - mouseDelta.y;
+
+        x = x < 180f ? Mathf.Clamp(x, -1f, 70f) : Mathf.Clamp(x, 335f, 361f);
+
+        cameraArm.rotation = Quaternion.Euler(new Vector3(x, cameraAngle.y + mouseDelta.x, cameraAngle.z));
+    }
+
+    private void Move()
+    {
+        Vector3 lookforward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
+        Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
+
+        playerTr.forward = lookforward;
+
+        Vector3 moveVec = lookforward * moveInput.y + lookRight * moveInput.x;
+
+        transform.position += moveVec * Time.deltaTime * speed;
+
+        // anim.SetBool("isWalk", moveInput.magnitude != 0);
+        // anim.SetBool("isRun", isKeyDown[(int)DownKey.RUN]);
+    }
+
     [PunRPC]
     void JumpRPC()
     {
-        RB.AddForce(Vector3.up * 20f, ForceMode.Impulse);
+        RB.AddForce(Vector3.up * 5f, ForceMode.Impulse);
     }
 
     // public void Hit()
