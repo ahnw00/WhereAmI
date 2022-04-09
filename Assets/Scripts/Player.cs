@@ -29,10 +29,13 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
     void Start()
     {
-        Camera mainCamera = FindObjectOfType<Camera>();
-        mainCamera.transform.SetParent(cameraArm);
-        mainCamera.transform.localPosition = new Vector3(0, 1.2f, -3f);
-        mainCamera.transform.localRotation = Quaternion.Euler(new Vector3(10, 0, 0));
+        if(PV.IsMine)
+        {
+            Camera mainCamera = FindObjectOfType<Camera>();
+            mainCamera.transform.SetParent(cameraArm);
+            mainCamera.transform.localPosition = new Vector3(0, 1.2f, -3f);
+            mainCamera.transform.localRotation = Quaternion.Euler(new Vector3(10, 0, 0));
+        }
     }
 
     void Update()
