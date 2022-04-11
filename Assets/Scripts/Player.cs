@@ -17,7 +17,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     bool isJump = false;
     float speed = 4f;
     Vector3 curPos;
-    Quaternion curRotation;
+    Vector3 curRotation;
     Vector2 moveInput;
     Vector2 mouseDelta;
 
@@ -60,7 +60,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         else 
         {
             transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
-            transform.rotation = Quaternion.Lerp(transform.rotation, curRotation, Time.deltaTime * 10);
+            playerTr.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(curRotation), Time.deltaTime * 10);
             LookAt(NickNameText.transform);
         }
     }
@@ -162,7 +162,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             curPos = (Vector3)stream.ReceiveNext();
-            curRotation = (Quaternion)stream.ReceiveNext();
+            curRotation = (Vector3)stream.ReceiveNext();
         }
     }
 }
