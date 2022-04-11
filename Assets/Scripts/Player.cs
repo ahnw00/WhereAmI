@@ -43,29 +43,24 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         if (PV.IsMine)
         {
             GetInput();
-            LookAt();
-            // 앞뒤좌우 이동
+            LookAt(cameraArm);
+            LookAt(NickNameText.transform);
             Move();
+            Jump();
 
             // if (horizontalAxis != 0 || verticalAxis != 0)
             // {
             //     AN.SetBool("walk", true);
             // }
             // else AN.SetBool("walk", false);
-
-
-            // ↑ 점프
-            if (Input.GetKeyDown(KeyCode.Space) && !isJump) 
-            {
-                isJump = true;
-                //AN.SetBool("jump", true);
-                PV.RPC("JumpRPC", RpcTarget.All);
-            }
-
         }
         // IsMine이 아닌 것들은 부드럽게 위치 동기화
         else if ((transform.position - curPos).sqrMagnitude >= 100) transform.position = curPos;
-        else transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
+        else 
+        {
+            transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
+            LookAt(NickNameText.transform);
+        }
     }
 
     public void OnCollisionEnter(Collision collision) // 충돌 감지, collision은 그 충돌체가 누구인지
@@ -96,7 +91,8 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
         //attackDelay += Time.deltaTime;
     }
-    private void LookAt()
+
+    private void LookAt(Transform target)
     {
         // 현재 내 카메라의 각도를 구해오고
         Vector3 cameraAngle = cameraArm.rotation.eulerAngles;
@@ -105,7 +101,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
         x = x < 180f ? Mathf.Clamp(x, -1f, 70f) : Mathf.Clamp(x, 335f, 361f);
 
-        cameraArm.rotation = Quaternion.Euler(new Vector3(x, cameraAngle.y + mouseDelta.x, cameraAngle.z));
+        target.rotation = Quaternion.Euler(new Vector3(x, cameraAngle.y + mouseDelta.x, cameraAngle.z));
     }
 
     private void Move()
@@ -121,6 +117,17 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
         // anim.SetBool("isWalk", moveInput.magnitude != 0);
         // anim.SetBool("isRun", isKeyDown[(int)DownKey.RUN]);
+    }
+
+    void Jump()
+    {
+        // ↑ 점프
+        if (Input.GetKeyDown(KeyCode.Space) && !isJump) 
+        {
+            isJump = true;
+            //AN.SetBool("jump", true);
+            PV.RPC("JumpRPC", RpcTarget.All);
+        }
     }
 
     [PunRPC]
