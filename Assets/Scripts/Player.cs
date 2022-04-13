@@ -35,7 +35,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             Camera mainCamera = FindObjectOfType<Camera>();
             mainCamera.transform.SetParent(cameraArm);
             mainCamera.transform.localPosition = new Vector3(0, 1.2f, -3f);
-            mainCamera.transform.localRotation = Quaternion.Euler(new Vector3(10, 0, 0));
+            playerTr.localRotation = Quaternion.Euler(new Vector3(10, 0, 0));
         }
     }
 
@@ -60,7 +60,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         else 
         {
             transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
-            playerTr.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(curRotation), Time.deltaTime * 10);
+            playerTr.rotation = Quaternion.Lerp(playerTr.rotation, Quaternion.Euler(curRotation), Time.deltaTime * 10);
             LookAt(NickNameText.transform);
         }
     }
@@ -157,7 +157,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(transform.position);
-            stream.SendNext(transform.rotation);
+            stream.SendNext(playerTr.rotation);
         }
         else
         {
