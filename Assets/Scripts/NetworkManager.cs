@@ -13,7 +13,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     //플레이어 리스팅 관련 선언
     [SerializeField] Transform playerListParent;
     [SerializeField] GameObject playerListing;
-    private Dictionary<int, GameObject> playerListEntries = new Dictionary<int, GameObject>();
+    public Dictionary<int, GameObject> playerListEntries = new Dictionary<int, GameObject>();
     bool isPlayerReady = false;
 
     void Awake()
@@ -64,7 +64,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     //전체 플레이어 준비 완료 됐는지 체크
-    private bool CheckPlayersReady()
+    public bool CheckPlayersReady()
 	{
 		if (!PhotonNetwork.IsMasterClient)
 		{
@@ -130,10 +130,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.Disconnect(); 
         }
-        if(CheckPlayersReady())
+        /*if(CheckPlayersReady() && playerListEntries.Count > 1)
         {
-            Debug.Log("게임시작");
-        }
+            foreach (Photon.Realtime.Player p in PhotonNetwork.PlayerList)
+            {
+                foreach (GameObject entry in playerListEntries.Values)
+		        {
+			        entry.transform.GetChild(2).gameObject.SetActive(false);
+		        }
+            }
+            
+        }*/
     }
 
     public override void OnDisconnected(DisconnectCause cause)
