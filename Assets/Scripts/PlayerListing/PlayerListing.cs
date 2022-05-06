@@ -66,4 +66,12 @@ public class PlayerListing : MonoBehaviour
         playerStatusText.text = playerReady ? "준비 완료" : "준비 중";
         playerStatusText.color = playerReady ? Color.green : Color.red;
     }
+
+    public void RemovePlayerReadyStatus()
+    {
+        foreach (GameObject entry in networkMng.playerListEntries.Values)
+	    {
+		    entry.transform.GetChild(1).gameObject.GetComponent<Text>().text = "";
+	    }
+    }
 } 

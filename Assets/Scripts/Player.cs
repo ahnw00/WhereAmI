@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -21,7 +22,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     Vector2 moveInput;
     Vector2 mouseDelta;
 
-     NetworkManager networkMng;
+    NetworkManager networkMng;
     Timer timer;
 
     void Awake()
@@ -71,14 +72,14 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             LookAt(NickNameText.transform);
         }
 
+        //PhotonView를 Player에 딸려있는 애들을 써야하기 때문에 여따가 작성
         if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 1)
         {
             if(PV.IsMine)
             {
-                PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);
-                PV.RPC("ReadyTimerFunc", RpcTarget.All);
-            }
-            
+                PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
+                PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
+            }  
         }
     }
 
@@ -183,6 +184,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
     
+
     [PunRPC]
     public void PlayerReadyButtonFunc()
     {
@@ -191,6 +193,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 		    entry.transform.GetChild(2).gameObject.SetActive(false);
 	    }
     }
+
 
     [PunRPC]
     public void ReadyTimerFunc()
