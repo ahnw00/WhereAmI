@@ -73,7 +73,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
 
         //PhotonView를 Player에 딸려있는 애들을 써야하기 때문에 여따가 작성
-        if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 1)
+        if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 2)
         {
             if(PV.IsMine)
             {
