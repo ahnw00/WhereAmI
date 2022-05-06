@@ -15,9 +15,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject playerListing;
     public Dictionary<int, GameObject> playerListEntries = new Dictionary<int, GameObject>();
     bool isPlayerReady = false;
+    NetworkManager networkMng;
+
 
     void Awake()
     {
+        networkMng = FindObjectOfType<NetworkManager>();
         Screen.SetResolution(1920, 1080, false);
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
@@ -129,18 +132,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.IsConnected) 
         {
             PhotonNetwork.Disconnect(); 
-        }
-        /*if(CheckPlayersReady() && playerListEntries.Count > 1)
-        {
-            foreach (Photon.Realtime.Player p in PhotonNetwork.PlayerList)
-            {
-                foreach (GameObject entry in playerListEntries.Values)
-		        {
-			        entry.transform.GetChild(2).gameObject.SetActive(false);
-		        }
-            }
-            
-        }*/
+        }        
     }
 
     public override void OnDisconnected(DisconnectCause cause)

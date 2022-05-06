@@ -21,8 +21,13 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     Vector2 moveInput;
     Vector2 mouseDelta;
 
+     NetworkManager networkMng;
+    Timer timer;
+
     void Awake()
     {
+        networkMng = FindObjectOfType<NetworkManager>();
+        timer = FindObjectOfType<Timer>();
         // 닉네임
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
@@ -39,6 +44,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    
     void Update()
     {
         if (PV.IsMine)
@@ -63,6 +69,16 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             //playerTr.rotation = Quaternion.Slerp(playerTr.rotation, Quaternion.Euler(curRotation), Time.deltaTime * 10);
             playerTr.rotation = Quaternion.Slerp(playerTr.rotation, curRot, Time.deltaTime * 10);
             LookAt(NickNameText.transform);
+        }
+
+        if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 1)
+        {
+            if(PV.IsMine)
+            {
+                PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);
+                PV.RPC("ReadyTimerFunc", RpcTarget.All);
+            }
+            
         }
     }
 
@@ -165,5 +181,20 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             curPos = (Vector3)stream.ReceiveNext();
             curRot = (Quaternion)stream.ReceiveNext();
         }
+    }
+    
+    [PunRPC]
+    public void PlayerReadyButtonFunc()
+    {
+        foreach (GameObject entry in networkMng.playerListEntries.Values)
+	    {
+		    entry.transform.GetChild(2).gameObject.SetActive(false);
+	    }
+    }
+
+    [PunRPC]
+    public void ReadyTimerFunc()
+    {
+        timer.ReadyTimer();
     }
 }

@@ -155,6 +155,7 @@ MonoBehaviour:
   playerStatusText: {fileID: 6427182133627173306}
   ownerId: 0
   PlayerReadyButton: {fileID: 4429557026177566124}
+  PV: {fileID: 0}
 --- !u!1 &2905523989269852185
 GameObject:
   m_ObjectHideFlags: 0

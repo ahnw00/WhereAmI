@@ -11,7 +11,13 @@ public class PlayerListing : MonoBehaviour
     public int ownerId;
     private bool isPlayerReady;
     public Button PlayerReadyButton;
+    NetworkManager networkMng;
 
+    private void Awake() 
+    {
+        networkMng = FindObjectOfType<NetworkManager>();
+    }
+    
     public void Start()
     {
         if (PhotonNetwork.LocalPlayer.ActorNumber != ownerId)
@@ -34,6 +40,17 @@ public class PlayerListing : MonoBehaviour
         }
     }
     
+    public void Update() 
+    {
+       if(Input.GetKeyDown(KeyCode.R))
+       {
+            isPlayerReady = !isPlayerReady;
+            SetPlayerReady(isPlayerReady);
+
+            ExitGames.Client.Photon.Hashtable newStatus = new ExitGames.Client.Photon.Hashtable() { { "isPlayerReady", isPlayerReady } };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(newStatus);
+       } 
+    }
 
     public void SetPlayerInfo(int playerId, string playerName)
     {
