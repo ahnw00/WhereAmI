@@ -43,7 +43,7 @@ public class Timer : MonoBehaviourPunCallbacks
 
         while (readyTimer > 0 && isPlaying)
         {
-            readyTimer -= Time.deltaTime;
+            readyTimer -= Time.deltaTime / PhotonNetwork.PlayerList.Length;
             readyTimerText.text = (int)readyTimer + " 초 뒤 게임이 시작됩니다";
             yield return null;
 

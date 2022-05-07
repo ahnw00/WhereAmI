@@ -46,7 +46,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
         if(PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("start");
             timer.GameStartButton.gameObject.SetActive(true);
             timer.GameStartButton.onClick.AddListener(() =>
             {
