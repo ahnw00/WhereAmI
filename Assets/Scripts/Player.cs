@@ -24,6 +24,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
     NetworkManager networkMng;
     Timer timer;
+    
 
     void Awake()
     {
@@ -42,6 +43,24 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             mainCamera.transform.SetParent(cameraArm);
             mainCamera.transform.localPosition = new Vector3(0, 1.2f, -3f);
             playerTr.localRotation = Quaternion.Euler(new Vector3(10, 0, 0));
+        }
+        if(PhotonNetwork.IsMasterClient)
+        {
+            timer.GameStartButton.gameObject.SetActive(true);
+            timer.GameStartButton.onClick.AddListener(() =>
+            {
+                if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 1)
+                {
+                    if(PV.IsMine)
+                    {
+                        PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
+                    }  
+                    if(PhotonNetwork.IsMasterClient)
+                    {
+                        PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
+                    }
+                }
+            });
         }
     }
 
@@ -73,7 +92,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
 
         //PhotonView를 Player에 딸려있는 애들을 써야하기 때문에 여따가 작성
-        if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 2)
+        /*if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 2)
         {
             if(PV.IsMine)
             {
@@ -83,7 +102,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             {
                 PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
             }
-        }
+        }*/
     }
 
     public void OnCollisionEnter(Collision collision) // 충돌 감지, collision은 그 충돌체가 누구인지

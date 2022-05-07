@@ -11,6 +11,7 @@ public class Timer : MonoBehaviourPunCallbacks
     bool isPlaying;
 
     PlayerListing playerListing;
+    public Button GameStartButton;
 
     void Awake()
     {
@@ -19,7 +20,7 @@ public class Timer : MonoBehaviourPunCallbacks
 
     public void ReadyTimer()
     {
-        if (readyTimer >= 0 )
+        /*if (readyTimer >= 0 )
         {
             readyTimerText.gameObject.SetActive(true);
             readyTimer -= Time.deltaTime;
@@ -29,12 +30,33 @@ public class Timer : MonoBehaviourPunCallbacks
         {
             readyTimerText.text = "게임 시작!";
             StartCoroutine(LoadingGameTimer());
+        }*/
+        GameStartButton.gameObject.SetActive(false);
+        StartCoroutine(GameScheduler());
+    }
+
+    private IEnumerator GameScheduler()
+    {
+        readyTimer = 5f;
+        isPlaying = true;
+        readyTimerText.gameObject.SetActive(true);
+
+        while (readyTimer > 0 && isPlaying)
+        {
+            readyTimer -= Time.deltaTime;
+            readyTimerText.text = (int)readyTimer + " 초 뒤 게임이 시작됩니다";
+            yield return null;
+
+            if (readyTimer <= 0)
+            {
+            	readyTimerText.text = "게임 시작!";
+                Invoke("GameStartOff", 2.0f);
+            }
         }
     }
 
-    IEnumerator LoadingGameTimer()
+    void GameStartOff()
     {
-        yield return null;
         readyTimerText.gameObject.SetActive(false);
     }
 }
