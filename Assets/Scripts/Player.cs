@@ -78,8 +78,11 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             if(PV.IsMine)
             {
                 PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
-                PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
             }  
+            if(PhotonNetwork.IsMasterClient)
+            {
+                PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
+            }
         }
     }
 
