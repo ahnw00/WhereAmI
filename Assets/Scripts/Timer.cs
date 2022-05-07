@@ -23,7 +23,7 @@ public class Timer : MonoBehaviourPunCallbacks
         {
             readyTimerText.gameObject.SetActive(true);
             readyTimer -= Time.deltaTime;
-            readyTimerText.text = Mathf.Round(readyTimer) + " 초 뒤 게임이 시작됩니다";
+            readyTimerText.text = (int)readyTimer + " 초 뒤 게임이 시작됩니다";
         }
         else
         {
@@ -34,7 +34,7 @@ public class Timer : MonoBehaviourPunCallbacks
 
     IEnumerator LoadingGameTimer()
     {
-        yield return new WaitForSeconds(2.0f);
+        yield return null;
         readyTimerText.gameObject.SetActive(false);
     }
 }
