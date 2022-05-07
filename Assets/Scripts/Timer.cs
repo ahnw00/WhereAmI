@@ -53,6 +53,7 @@ public class Timer : MonoBehaviourPunCallbacks
                 Invoke("GameStartOff", 2.0f);
             }
         }
+        Debug.Log("coroutine");
     }
 
     void GameStartOff()

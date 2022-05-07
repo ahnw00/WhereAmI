@@ -46,19 +46,17 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
         if(PhotonNetwork.IsMasterClient)
         {
+            Debug.Log("start");
             timer.GameStartButton.gameObject.SetActive(true);
             timer.GameStartButton.onClick.AddListener(() =>
             {
-                if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 1)
+                if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 0)
                 {
+                    PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
                     if(PV.IsMine)
                     {
                         PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
-                    }  
-                    if(PhotonNetwork.IsMasterClient)
-                    {
-                        PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
-                    }
+                    }     
                 }
             });
         }
