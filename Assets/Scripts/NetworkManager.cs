@@ -16,10 +16,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public Dictionary<int, GameObject> playerListEntries = new Dictionary<int, GameObject>();
     bool isPlayerReady = false;
     NetworkManager networkMng;
+    GameManager gameManager;
 
 
     void Awake()
     {
+        gameManager = FindObjectOfType<GameManager>();
         networkMng = FindObjectOfType<NetworkManager>();
         Screen.SetResolution(1920, 1080, false);
         PhotonNetwork.SendRate = 60;
@@ -37,7 +39,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         DisconnectPanel.SetActive(false);
-        Spawn();
+        //Spawn();
+        RandomSpawn();
         ConnectPanel.SetActive(true);
         
         //플레이어 리스트
@@ -64,6 +67,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void Spawn()
     {
         PhotonNetwork.Instantiate("PlayerObject", new Vector3(Random.Range(60, 96), 80f, Random.Range(-3, 32)), Quaternion.identity);
+    }
+
+    public void RandomSpawn()
+    {
+        int randomNum = Random.Range(0, gameManager.playableObjects.Count);
+        string randomObj = gameManager.playableObjects[randomNum].name;
+        GameObject spawnedObj = PhotonNetwork.Instantiate(randomObj, new Vector3(Random.Range(60, 96), 80f, Random.Range(-3, 32)), Quaternion.identity);
     }
 
     //전체 플레이어 준비 완료 됐는지 체크

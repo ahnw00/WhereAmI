@@ -9,7 +9,6 @@ using UnityEngine.UI;
 public class Player : MonoBehaviourPunCallbacks, IPunObservable
 {
     public Rigidbody RB;
-    public Animator AN;
     public PhotonView PV;
     public TextMeshPro NickNameText;
     public Transform cameraArm; 

@@ -5,12 +5,13 @@ using Photon.Pun;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> playableObjects;
+    public static GameManager instance;
+    public List<GameObject> playableObjects;
 
     // Start is called before the first frame update
     void Start()
     {
-        function();
+        
     }
 
     // Update is called once per frame
@@ -21,6 +22,6 @@ public class GameManager : MonoBehaviour
 
     public void function()
     {
-        playableObjects[Random.Range(0, 100)].AddComponent<PhotonView>();
+        
     }
 }
