@@ -178,7 +178,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             {
                 PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
             }     
-            gameMng.PickTagger();
+            gameMng.PickFirstTagger();
         }
     }
 

@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void PickTagger()
+    public void PickFirstTagger()
     {
         //PlayerController달고있는 애들 리스트화 시키기
         List<Player> PlayerList = new List<Player>(players);
@@ -38,11 +38,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         Debug.Log("술래 Number is " + whichPlayerIsTagger);
         //해당 사람이 술래로 지정
         players[whichPlayerIsTagger].GetComponent<PhotonView>().RPC("SetTagger", RpcTarget.All, true);
-    }
-
-    public void RandomFirstTagger()
-    {
-
     }
 
     private IEnumerator CamToWaitPointCoroutine()
