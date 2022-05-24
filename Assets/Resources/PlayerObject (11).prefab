@@ -92,6 +92,7 @@ MonoBehaviour:
   nickNameText: {fileID: 1943060246342818052}
   cameraArm: {fileID: 3874297137167801885}
   playerTr: {fileID: 24159880289150521}
+  isTagger: 0
 --- !u!1 &1943060246342818055
 GameObject:
   m_ObjectHideFlags: 0

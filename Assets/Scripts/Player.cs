@@ -75,6 +75,11 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             playerTr.rotation = Quaternion.Slerp(playerTr.rotation, curRot, Time.deltaTime * 10);
             LookAt(nickNameText.transform);
         }
+        //술래가 됐다!
+        if (isTagger && Input.GetMouseButtonDown(0))
+        {
+            
+        }
     }
 
     // 충돌 감지, collision은 그 충돌체가 누구인지
@@ -203,7 +208,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     {
         //술래를 정해주는 RPC
         isTagger = _isTagger;
-        Debug.Log("Boss " + isTagger);
+        Debug.Log("Tagger " + isTagger);
     }
 
 //--------------------------오브젝트 파괴 함수------------------------------------
