@@ -23,15 +23,21 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
     NetworkManager networkMng;
     Timer timer;
+    GameManager gameMng;
+    [SerializeField] bool isTagger = false;
     
 
     void Awake()
     {
         networkMng = FindObjectOfType<NetworkManager>();
         timer = FindObjectOfType<Timer>();
+        gameMng = FindObjectOfType<GameManager>();
         // 닉네임
         nickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         nickNameText.color = PV.IsMine ? Color.green : Color.red;
+
+        //gameMng.players 리스트에 플레이어 추가
+        gameMng.players.Add(this);
     }
 
     void Start()
@@ -43,25 +49,13 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             mainCamera.transform.localPosition = new Vector3(0, 1.2f, -3f);
             playerTr.localRotation = Quaternion.Euler(new Vector3(10, 0, 0));
         }
+        //PV가 Master Client면 게임시작 버튼 켜주기
         if(PhotonNetwork.IsMasterClient)
         {
             timer.GameStartButton.gameObject.SetActive(true);
             timer.GameStartButton.onClick.AddListener(() =>{ ReadyTimer(); });
         }
     }
-
-    void ReadyTimer()
-    {
-        if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 0)
-        {
-            PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
-            if(PV.IsMine)
-            {
-                PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
-            }     
-        }
-    }
-
     
     void Update()
     {
@@ -83,7 +77,8 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    public void OnCollisionEnter(Collision collision) // 충돌 감지, collision은 그 충돌체가 누구인지
+    // 충돌 감지, collision은 그 충돌체가 누구인지
+    public void OnCollisionEnter(Collision collision) 
     {
         if(collision.gameObject.tag == "Ground")
         {
@@ -159,10 +154,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     //     }
     // }
 
-    [PunRPC]
-    void DestroyRPC() => Destroy(gameObject);
-
-
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -176,7 +167,26 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             curRot = (Quaternion)stream.ReceiveNext();
         }
     }
-    
+//-------------------------게임 시작 버튼 & 타이머 함수-----------------------------------
+    //게임시작 버튼에 딸린 함수 (타이머 On)
+    void ReadyTimer()
+    {
+        if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 0)
+        {
+            PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
+            if(PV.IsMine)
+            {
+                PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
+            }     
+            gameMng.PickTagger();
+        }
+    }
+
+    [PunRPC]
+    public void ReadyTimerFunc()
+    {
+        timer.ReadyTimer();
+    }
 
     [PunRPC]
     public void PlayerReadyButtonFunc()
@@ -185,14 +195,20 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 	    {
 		    entry.transform.GetChild(2).gameObject.SetActive(false);
 	    }
-    }
+    }  
 
-
+//-----------------------------술래 설정 함수-------------------------------------
     [PunRPC]
-    public void ReadyTimerFunc()
+    void SetTagger(bool _isTagger)
     {
-        timer.ReadyTimer();
+        //술래를 정해주는 RPC
+        isTagger = _isTagger;
+        Debug.Log("Boss " + isTagger);
     }
+
+//--------------------------오브젝트 파괴 함수------------------------------------
+    [PunRPC]
+    void DestroyRPC() => Destroy(gameObject);
 
     public void DestroyObj()
     {

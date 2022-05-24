@@ -11,13 +11,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject camWaitingPoint;
     private float lerpTime = 5f;
 
-    // Start is called before the first frame update
+    public List<Player> players = new List<Player>();
+    public int whichPlayerIsTagger;
+    
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Space))
@@ -26,7 +27,20 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void RandomFirstTugger()
+    public void PickTagger()
+    {
+        //PlayerController달고있는 애들 리스트화 시키기
+        List<Player> PlayerList = new List<Player>(players);
+        //그중에 하나 술래로 정해주기
+        whichPlayerIsTagger = Random.Range(0, PlayerList.Count);
+        //플레이어 몇명인지 , 누가 술래인지 체크
+        Debug.Log("We have " + PlayerList.Count);
+        Debug.Log("술래 Number is " + whichPlayerIsTagger);
+        //해당 사람이 술래로 지정
+        players[whichPlayerIsTagger].GetComponent<PhotonView>().RPC("SetTagger", RpcTarget.All, true);
+    }
+
+    public void RandomFirstTagger()
     {
 
     }

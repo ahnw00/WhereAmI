@@ -36,6 +36,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6 }, null);
     }
 
+    //방에 입장할 때
     public override void OnJoinedRoom()
     {
         DisconnectPanel.SetActive(false);
@@ -69,6 +70,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.Instantiate("PlayerObject", new Vector3(Random.Range(60, 96), 80f, Random.Range(-3, 32)), Quaternion.identity);
     }
 
+    //랜덤 아바타 스폰 함수
     public void RandomSpawn()
     {
         int randomNum = Random.Range(0, gameManager.playableObjects.Count);
@@ -76,6 +78,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         GameObject spawnedObj = PhotonNetwork.Instantiate(randomObj, RandomSpawnPoint(), Quaternion.identity);
     }
 
+    //스폰 위치 랜덤 지정 함수
     private Vector3 RandomSpawnPoint()
     {
         if(Random.value > 0.5f)
