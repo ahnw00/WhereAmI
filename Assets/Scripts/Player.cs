@@ -10,7 +10,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 {
     public Rigidbody RB;
     public PhotonView PV;
-    public TextMeshPro NickNameText;
+    public TextMeshPro nickNameText;
     public Transform cameraArm; 
     public Transform playerTr;
 
@@ -30,8 +30,8 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         networkMng = FindObjectOfType<NetworkManager>();
         timer = FindObjectOfType<Timer>();
         // 닉네임
-        NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
-        NickNameText.color = PV.IsMine ? Color.green : Color.red;
+        nickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
+        nickNameText.color = PV.IsMine ? Color.green : Color.red;
     }
 
     void Start()
@@ -46,17 +46,19 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         if(PhotonNetwork.IsMasterClient)
         {
             timer.GameStartButton.gameObject.SetActive(true);
-            timer.GameStartButton.onClick.AddListener(() =>
+            timer.GameStartButton.onClick.AddListener(() =>{ ReadyTimer(); });
+        }
+    }
+
+    void ReadyTimer()
+    {
+        if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 0)
+        {
+            PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
+            if(PV.IsMine)
             {
-                if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 0)
-                {
-                    PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
-                    if(PV.IsMine)
-                    {
-                        PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
-                    }     
-                }
-            });
+                PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
+            }     
         }
     }
 
@@ -67,38 +69,18 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         {
             GetInput();
             LookAt(cameraArm);
-            LookAt(NickNameText.transform);
+            LookAt(nickNameText.transform);
             Move();
             Jump();
-
-            // if (horizontalAxis != 0 || verticalAxis != 0)
-            // {
-            //     AN.SetBool("walk", true);
-            // }
-            // else AN.SetBool("walk", false);
         }
         // IsMine이 아닌 것들은 부드럽게 위치 동기화
         else if ((transform.position - curPos).sqrMagnitude >= 100) transform.position = curPos;
         else 
         {
             transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
-            //playerTr.rotation = Quaternion.Slerp(playerTr.rotation, Quaternion.Euler(curRotation), Time.deltaTime * 10);
             playerTr.rotation = Quaternion.Slerp(playerTr.rotation, curRot, Time.deltaTime * 10);
-            LookAt(NickNameText.transform);
+            LookAt(nickNameText.transform);
         }
-
-        //PhotonView를 Player에 딸려있는 애들을 써야하기 때문에 여따가 작성
-        /*if(networkMng.CheckPlayersReady() && networkMng.playerListEntries.Count > 2)
-        {
-            if(PV.IsMine)
-            {
-                PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
-            }  
-            if(PhotonNetwork.IsMasterClient)
-            {
-                PV.RPC("ReadyTimerFunc", RpcTarget.All);   //준비 타이머 On
-            }
-        }*/
     }
 
     public void OnCollisionEnter(Collision collision) // 충돌 감지, collision은 그 충돌체가 누구인지
@@ -122,10 +104,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         mouseDelta = new Vector2(x, y);
 
         // isKeyDown[(int)DownKey.JUMP] = Input.GetButtonDown("Jump");
-        // isKeyDown[(int)DownKey.RUN] = Input.GetButton("Run");
-        // isKeyDown[(int)DownKey.PICK] = Input.GetButtonDown("Pick");
-        // isKeyDown[(int)DownKey.SWAP1] = Input.GetButtonDown("SwapGun");
-        // isKeyDown[(int)DownKey.SWAP3] = Input.GetButtonDown("SwapKnife");
 
         //attackDelay += Time.deltaTime;
     }
@@ -152,9 +130,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         Vector3 moveVec = lookforward * moveInput.y + lookRight * moveInput.x;
 
         transform.position += moveVec * Time.deltaTime * speed;
-
-        // anim.SetBool("isWalk", moveInput.magnitude != 0);
-        // anim.SetBool("isRun", isKeyDown[(int)DownKey.RUN]);
     }
 
     void Jump()
@@ -163,10 +138,10 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         if (Input.GetKeyDown(KeyCode.Space) && !isJump) 
         {
             isJump = true;
-            //AN.SetBool("jump", true);
             PV.RPC("JumpRPC", RpcTarget.All);
         }
     }
+
 
     [PunRPC]
     void JumpRPC()
@@ -217,5 +192,19 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public void ReadyTimerFunc()
     {
         timer.ReadyTimer();
+    }
+
+    public void DestroyObj()
+    {
+        PV.RPC("DestroyPlayerObject", RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void DestroyPlayerObject()
+    {
+        if(photonView.IsMine)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }

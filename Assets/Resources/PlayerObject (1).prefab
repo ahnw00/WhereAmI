@@ -89,7 +89,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RB: {fileID: 246167268567504362}
   PV: {fileID: 246167268567504365}
-  NickNameText: {fileID: 246167270023620416}
+  nickNameText: {fileID: 246167270023620416}
   cameraArm: {fileID: 5401037724586127934}
   playerTr: {fileID: 6963684980409062519}
 --- !u!1 &246167270023620419

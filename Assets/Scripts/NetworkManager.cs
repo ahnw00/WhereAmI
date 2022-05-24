@@ -73,7 +73,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         int randomNum = Random.Range(0, gameManager.playableObjects.Count);
         string randomObj = gameManager.playableObjects[randomNum].name;
-        GameObject spawnedObj = PhotonNetwork.Instantiate(randomObj, new Vector3(Random.Range(60, 96), 80f, Random.Range(-3, 32)), Quaternion.identity);
+        GameObject spawnedObj = PhotonNetwork.Instantiate(randomObj, RandomSpawnPoint(), Quaternion.identity);
+    }
+
+    private Vector3 RandomSpawnPoint()
+    {
+        if(Random.value > 0.5f)
+        {
+            return new Vector3(Random.Range(60, 96), 80f, Random.Range(-3, 9));
+        }
+        else
+        {
+            return new Vector3(Random.Range(60, 96), 80f, Random.Range(20, 32));
+        }
     }
 
     //전체 플레이어 준비 완료 됐는지 체크
