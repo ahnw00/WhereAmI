@@ -47,6 +47,11 @@ MonoBehaviour:
   - RemovePlayerReadyStatus
   - DestroyPlayerObject
   - SetTagger
+  - WhenTaggerHitPlayerFunc
+  - MakeNewObj
+  - addRandumNum
+  - ResetCamera
+  - addRandumVec
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -12270,6 +12270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1620444267}
   - component: {fileID: 1620444268}
+  - component: {fileID: 1620444269}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -12319,6 +12320,23 @@ MonoBehaviour:
   - {fileID: 4122821204323041422, guid: a94a0f971d9414b4faa3eb369d47e75d, type: 3}
   isRoundEnded: 0
   camWaitingPoint: {fileID: 1528219836}
+  players: []
+  whichPlayerIsTagger: 0
+  gameStartBtn: {fileID: 1653045897}
+  nextTagger: 0
+--- !u!114 &1620444269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620444266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38d2d78e8eda207408d91e0e59594a10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 2132830027}
 --- !u!1 &1620800524
 GameObject:
   m_ObjectHideFlags: 0
@@ -13073,7 +13091,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1653045898}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: PickFirstTagger
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1653045898
 MonoBehaviour:
   m_ObjectHideFlags: 0

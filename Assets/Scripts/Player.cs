@@ -25,13 +25,14 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     Timer timer;
     GameManager gameMng;
     [SerializeField] bool isTagger = false;
-    
+    Tagger tagger; 
 
     void Awake()
     {
         networkMng = FindObjectOfType<NetworkManager>();
         timer = FindObjectOfType<Timer>();
         gameMng = FindObjectOfType<GameManager>();
+        tagger = FindObjectOfType<Tagger>();
         // 닉네임
         nickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         nickNameText.color = PV.IsMine ? Color.green : Color.red;
@@ -66,6 +67,11 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             LookAt(nickNameText.transform);
             Move();
             Jump();
+            //술래가 됐다!
+            if (isTagger && Input.GetMouseButtonDown(0))
+            {
+                HitPlayer();
+            }
         }
         // IsMine이 아닌 것들은 부드럽게 위치 동기화
         else if ((transform.position - curPos).sqrMagnitude >= 100) transform.position = curPos;
@@ -74,11 +80,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
             playerTr.rotation = Quaternion.Slerp(playerTr.rotation, curRot, Time.deltaTime * 10);
             LookAt(nickNameText.transform);
-        }
-        //술래가 됐다!
-        if (isTagger && Input.GetMouseButtonDown(0))
-        {
-            
         }
     }
 
@@ -182,8 +183,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             if(PV.IsMine)
             {
                 PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
-            }     
-            gameMng.PickFirstTagger();
+            } 
         }
     }
 
@@ -211,9 +211,65 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("Tagger " + isTagger);
     }
 
+    public void HitPlayer()
+    {
+        Camera mainCamera = FindObjectOfType<Camera>();
+        RaycastHit hitObj;
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        ray.origin = mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,0f));
+
+        Debug.DrawRay(ray.origin, ray.direction * 150, Color.red, 3f);
+        if (Physics.Raycast(ray.origin, ray.direction, out hitObj, Mathf.Infinity))
+        {
+            //레이에 맞은 물체가 player인가? 맞다면 player 정보 갖고오기
+            if(hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>())
+            {
+                for(int i = 0; i < gameMng.players.Count; i++)
+                {
+                    if(gameMng.players[i] == hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>())
+                    {
+                        Debug.Log(hitObj.transform.gameObject);
+                        
+                        gameMng.nextTagger = i;
+                        Debug.Log(gameMng.nextTagger);
+                        gameMng.MakeRandomNum();
+                        PV.RPC("WhenTaggerHitPlayerFunc", RpcTarget.All); 
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    [PunRPC]
+    public void WhenTaggerHitPlayerFunc()
+    {
+        gameMng.WhenTaggerHitPlayer();
+    }
+
+    [PunRPC]
+    public void addRandumNum(int ranNum)
+    {
+        gameMng.RandomNums.Add(ranNum);
+    }
+
+    [PunRPC]
+    public void addRandumVec(Vector3 ranVec)
+    {
+        gameMng.RandomVecs.Add(ranVec);
+    }
+
+    [PunRPC]
+    public void ResetCamera()
+    {
+        Camera cam = FindObjectOfType<Camera>();
+        cam.transform.SetParent(cameraArm.transform);
+        cam.transform.localPosition = new Vector3(0, 1.2f, -3);
+        cam.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
+    }
 //--------------------------오브젝트 파괴 함수------------------------------------
     [PunRPC]
-    void DestroyRPC() => Destroy(gameObject);
+    void DestroyRPC() => Destroy(this.gameObject);
 
     public void DestroyObj()
     {

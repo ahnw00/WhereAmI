@@ -28,7 +28,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5707296560805593729}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5707296560497127021
 GameObject:
@@ -231,8 +231,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5707296560497126994}
-  - {fileID: 5822172827360402596}
   - {fileID: 1806094039509950307}
+  - {fileID: 5822172827360402596}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -292,6 +292,7 @@ MonoBehaviour:
   nickNameText: {fileID: 5707296560497127020}
   cameraArm: {fileID: 1806094039509950307}
   playerTr: {fileID: 5822172827360402596}
+  isTagger: 0
 --- !u!1001 &5707296560291643554
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -301,7 +302,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2303838245118647302, guid: 8d371c1d43d56e94b93bffa2f926a5f1, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2303838245118647302, guid: 8d371c1d43d56e94b93bffa2f926a5f1, type: 3}
       propertyPath: m_LocalPosition.x

@@ -78,8 +78,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         GameObject spawnedObj = PhotonNetwork.Instantiate(randomObj, RandomSpawnPoint(), Quaternion.identity);
     }
 
+
     //스폰 위치 랜덤 지정 함수
-    private Vector3 RandomSpawnPoint()
+    public Vector3 RandomSpawnPoint()
     {
         if(Random.value > 0.5f)
         {
