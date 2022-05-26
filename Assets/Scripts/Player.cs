@@ -241,7 +241,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
                         gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, false);
                         gameMng.whichPlayerIsTagger = i;
                         gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, true);
-                        Debug.Log(gameMng.whichPlayerIsTagger);
+                        Debug.Log("whichPlayerIsTagger" + gameMng.whichPlayerIsTagger);
                         //각각 플레이어의 오브젝트 랜덤 생성을 위한 번호 & 랜덤 벡터값 생성 
                         gameMng.MakeRandomNum();
                         //카메라 조정 코루틴 & 새 랜덤 오브젝트로 교체

@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public List<Vector3> RandomVecs = new List<Vector3>();
     public int whichPlayerIsTagger;
     [SerializeField] private Button gameStartBtn;
-    public int nextTagger;
     NetworkManager networkMng;
     
     void Start()
