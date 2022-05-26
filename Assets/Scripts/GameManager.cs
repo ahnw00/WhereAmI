@@ -23,18 +23,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     void Start()
     {
         networkMng = FindObjectOfType<NetworkManager>();
-        gameStartBtn.onClick.AddListener(() =>{ PickFirstTagger(); });
+        List<Player> PlayerList = new List<Player>(players);
+        whichPlayerIsTagger = Random.Range(0, PlayerList.Count);
+        gameStartBtn.onClick.AddListener(() =>{ ChangeTagger(whichPlayerIsTagger, true); });
     }
 
-    public void PickFirstTagger()
+    public void ChangeTagger(int i, bool isTagger)
     {
         //Player 달고있는 애들 리스트화 시키기
         List<Player> PlayerList = new List<Player>(players);
-        //그중에 하나 술래로 정해주기
-        whichPlayerIsTagger = Random.Range(0, PlayerList.Count);
         //해당 사람 술래로 지정
-        players[whichPlayerIsTagger].GetComponent<PhotonView>().RPC("SetTagger", RpcTarget.All, true);
-        
+        players[i].GetComponent<PhotonView>().RPC("SetTagger", RpcTarget.All, isTagger); 
         Debug.Log("We have " + PlayerList.Count);
         Debug.Log("술래 Number is " + whichPlayerIsTagger);
     }

@@ -233,12 +233,15 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             {   //player 리스트 안에서
                 for(int i = 0; i < gameMng.players.Count; i++)
                 {   //레이 맞은 오브젝트의 player와 같은 것 찾기
-                    if(gameMng.players[i] == hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>())
+                    if(gameMng.players[i] == hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>()
+                        && i != gameMng.whichPlayerIsTagger)
                     {
                         Debug.Log(hitObj.transform.gameObject);
                         //다음 술래를 맞은 오브젝트로
-                        gameMng.nextTagger = i;
-                        Debug.Log(gameMng.nextTagger);
+                        gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, false);
+                        gameMng.whichPlayerIsTagger = i;
+                        gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, true);
+                        Debug.Log(gameMng.whichPlayerIsTagger);
                         //각각 플레이어의 오브젝트 랜덤 생성을 위한 번호 & 랜덤 벡터값 생성 
                         gameMng.MakeRandomNum();
                         //카메라 조정 코루틴 & 새 랜덤 오브젝트로 교체
