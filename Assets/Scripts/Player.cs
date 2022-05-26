@@ -40,7 +40,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             PhotonView P = this.gameObject.GetComponent<PhotonView>();
             //if(P.ViewID == PhotonNetwork.PlayerList[i].UserId)
         }
-        
         gameMng.players.Add(this);
     }
 
@@ -60,6 +59,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             timer.GameStartButton.gameObject.SetActive(true);
             timer.GameStartButton.onClick.AddListener(() =>{ ReadyTimer(); });
         }
+        gameMng.players[gameObject.GetComponent<PhotonView>().ViewID / 1000 -1] = this;
     }
     
     void Update()
