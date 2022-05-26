@@ -13,6 +13,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public TextMeshPro nickNameText;
     public Transform cameraArm; 
     public Transform playerTr;
+    Vector3 lookforward;
 
     bool isJump = false;
     float speed = 4f;
@@ -127,7 +128,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Move()
     {
-        Vector3 lookforward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
+        lookforward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
         Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
 
         playerTr.forward = lookforward;
@@ -219,9 +220,11 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     //그 값을 나머지 PV에 뿌려줌 (이렇게 안하면..랜덤값이 다 제각각이여) 
     public void HitPlayer()
     {
+         
         Camera mainCamera = FindObjectOfType<Camera>();
+        Vector3 ScreenCenter = new Vector3(mainCamera.pixelWidth /2, mainCamera.pixelHeight /2);
         RaycastHit hitObj;
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mainCamera.ScreenPointToRay(ScreenCenter);
         //레이 쏠 때 시작 위치를 화면 정중앙으로 설정
         ray.origin = mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,0f));
         Debug.DrawRay(ray.origin, ray.direction * 150, Color.red, 3f);
