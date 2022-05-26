@@ -69,9 +69,6 @@ public class PlayerListing : MonoBehaviour
 
     public void RemovePlayerReadyStatus()
     {
-        foreach (GameObject entry in networkMng.playerListEntries.Values)
-	    {
-		    entry.transform.GetChild(1).gameObject.GetComponent<Text>().text = "";
-	    }
+        playerStatusText.text = "";
     }
 } 

@@ -16,8 +16,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public List<int> RandomNums = new List<int>();
     public List<Vector3> RandomVecs = new List<Vector3>();
     public int whichPlayerIsTagger;
-    [SerializeField] private Button gameStartBtn;
+    [SerializeField] Button gameStartBtn;
     NetworkManager networkMng;
+    [SerializeField] Text taggerChangeText;
+    public Text youTaggerText; 
     
     void Start()
     {
@@ -50,6 +52,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         float timer = 0;
         float speed = 1 / lerpTime;
 
+        taggerChangeText.gameObject.SetActive(true);
+        youTaggerText.gameObject.SetActive(false);
         while(timer < 1)
         {
             timer += Time.deltaTime * speed;
@@ -57,15 +61,17 @@ public class GameManager : MonoBehaviourPunCallbacks
             cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, Quaternion.Euler(0, 0, 0), timer);
             yield return null;
 
-            if(timer >= 1)
+            if(timer >= 0.8)
             {
+                taggerChangeText.gameObject.SetActive(false);
                 //타이머 끝나면 랜덤 오브젝트 생성
                 MakeNewObj();
+                break;
             }
         }
     }
 
-    //새 오브젝트 생성 & 이전꺼 파괴 & 카메라 원래대로
+    //새 오브젝트 생성 & 이전꺼 파괴 & 카메라 원래대로 & 술래입니다 텍스트 띄워주기
     public void MakeNewObj()
     {
         for(int i = 0; i < players.Count; i++)
@@ -77,7 +83,14 @@ public class GameManager : MonoBehaviourPunCallbacks
                 if(pv.IsMine)
                 {
                     pv.gameObject.GetComponent<Player>().ResetCamera();
-                    break;
+                    if(pv.gameObject.GetComponent<Player>().GetIsTaggerValue())
+                    {
+                        youTaggerText.gameObject.SetActive(true);
+                    }
+                }
+                else
+                {
+                    youTaggerText.gameObject.SetActive(false);
                 }
             }
         }
@@ -110,4 +123,5 @@ public class GameManager : MonoBehaviourPunCallbacks
             players[i].GetComponent<PhotonView>().RPC("addRandomVec", RpcTarget.All, randomVec);
         }
     } 
+
 }

@@ -12,25 +12,16 @@ public class Timer : MonoBehaviourPunCallbacks
 
     PlayerListing playerListing;
     public Button GameStartButton;
+    GameManager gameMng;
 
     void Awake()
     {
         playerListing = FindObjectOfType<PlayerListing>();
+        gameMng = FindObjectOfType<GameManager>();
     }
 
     public void ReadyTimer()
     {
-        /*if (readyTimer >= 0 )
-        {
-            readyTimerText.gameObject.SetActive(true);
-            readyTimer -= Time.deltaTime;
-            readyTimerText.text = (int)readyTimer + " 초 뒤 게임이 시작됩니다";
-        }
-        else
-        {
-            readyTimerText.text = "게임 시작!";
-            StartCoroutine(LoadingGameTimer());
-        }*/
         GameStartButton.gameObject.SetActive(false);
         StartCoroutine(GameScheduler());
     }
@@ -44,7 +35,7 @@ public class Timer : MonoBehaviourPunCallbacks
         while (readyTimer > 0 && isPlaying)
         {
             readyTimer -= Time.deltaTime / PhotonNetwork.PlayerList.Length;
-            readyTimerText.text = (int)readyTimer + " 초 뒤 게임이 시작됩니다";
+            readyTimerText.text = (int)readyTimer +1 + " 초 뒤 게임이 시작됩니다";
             yield return null;
 
             if (readyTimer <= 0)
@@ -59,5 +50,21 @@ public class Timer : MonoBehaviourPunCallbacks
     void GameStartOff()
     {
         readyTimerText.gameObject.SetActive(false);
+        YouTaggerTextOn();
+    }
+
+    void YouTaggerTextOn()
+    {
+        for(int i = 0; i < gameMng.players.Count; i++)
+        {
+            foreach(PhotonView pv in FindObjectsOfType<PhotonView>())
+            {
+                if(pv.IsMine && pv.gameObject.GetComponent<Player>().GetIsTaggerValue())
+                {
+                    gameMng.youTaggerText.gameObject.SetActive(true);
+                    break;
+                }
+            }
+        }
     }
 }

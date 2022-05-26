@@ -13,7 +13,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public TextMeshPro nickNameText;
     public Transform cameraArm; 
     public Transform playerTr;
-    Vector3 lookforward;
 
     bool isJump = false;
     float speed = 4f;
@@ -34,7 +33,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         gameMng = FindObjectOfType<GameManager>();
         // 닉네임
         nickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
-        nickNameText.color = PV.IsMine ? Color.green : Color.red;
+        nickNameText.color = PV.IsMine ? Color.green : Color.white;
 
         for(int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
@@ -128,7 +127,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Move()
     {
-        lookforward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
+        Vector3 lookforward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
         Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
 
         playerTr.forward = lookforward;
@@ -155,16 +154,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         RB.AddForce(Vector3.up * 5f, ForceMode.Impulse);
     }
 
-    // public void Hit()
-    // {
-    //     HealthImage.fillAmount -= 0.1f;
-    //     if (HealthImage.fillAmount <= 0)
-    //     {
-    //         GameObject.Find("Canvas").transform.Find("RespawnPanel").gameObject.SetActive(true);
-    //         PV.RPC("DestroyRPC", RpcTarget.AllBuffered); // AllBuffered로 해야 제대로 사라져 복제버그가 안 생긴다
-    //     }
-    // }
-
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -188,6 +177,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             if(PV.IsMine)
             {
                 PV.RPC("PlayerReadyButtonFunc", RpcTarget.All);  //모든 플레이어한테서 버튼 꺼주기
+                PV.RPC("ReadyStatusOff", RpcTarget.All);
             } 
         }
     }
@@ -205,6 +195,15 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 	    {
 		    entry.transform.GetChild(2).gameObject.SetActive(false);
 	    }
+    }
+
+    [PunRPC]
+    public void ReadyStatusOff()
+    {
+        foreach(GameObject entry in networkMng.playerListEntries.Values)
+        {
+            entry.GetComponent<PlayerListing>().RemovePlayerReadyStatus();
+        }
     }  
 
 //-----------------------------술래 관련 함수-------------------------------------
@@ -220,11 +219,9 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     //그 값을 나머지 PV에 뿌려줌 (이렇게 안하면..랜덤값이 다 제각각이여) 
     public void HitPlayer()
     {
-         
         Camera mainCamera = FindObjectOfType<Camera>();
-        Vector3 ScreenCenter = new Vector3(mainCamera.pixelWidth /2, mainCamera.pixelHeight /2);
         RaycastHit hitObj;
-        Ray ray = mainCamera.ScreenPointToRay(ScreenCenter);
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         //레이 쏠 때 시작 위치를 화면 정중앙으로 설정
         ray.origin = mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,0f));
         Debug.DrawRay(ray.origin, ray.direction * 150, Color.red, 3f);
@@ -265,6 +262,12 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     {
         gameMng.WhenTaggerHitPlayer();
     }
+
+    public bool GetIsTaggerValue()
+    {
+        return isTagger;
+    }
+
     //생성된 랜덤 숫자를 리스트에 넣어줌 
     [PunRPC]
     public void addRandomNum(int ranNum)
