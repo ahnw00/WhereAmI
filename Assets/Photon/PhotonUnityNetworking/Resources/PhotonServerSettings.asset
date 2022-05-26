@@ -52,6 +52,9 @@ MonoBehaviour:
   - addRandumNum
   - ResetCamera
   - addRandumVec
+  - addRandomNum
+  - addRandomVec
+  - AddPlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

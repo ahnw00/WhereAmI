@@ -25,21 +25,25 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     Timer timer;
     GameManager gameMng;
     [SerializeField] bool isTagger = false;
-    Tagger tagger; 
 
     void Awake()
     {
         networkMng = FindObjectOfType<NetworkManager>();
         timer = FindObjectOfType<Timer>();
         gameMng = FindObjectOfType<GameManager>();
-        tagger = FindObjectOfType<Tagger>();
         // 닉네임
         nickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         nickNameText.color = PV.IsMine ? Color.green : Color.red;
 
-        //gameMng.players 리스트에 플레이어 추가
+        for(int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        {
+            PhotonView P = this.gameObject.GetComponent<PhotonView>();
+            //if(P.ViewID == PhotonNetwork.PlayerList[i].UserId)
+        }
+        
         gameMng.players.Add(this);
     }
+
 
     void Start()
     {
@@ -202,37 +206,42 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
 	    }
     }  
 
-//-----------------------------술래 설정 함수-------------------------------------
+//-----------------------------술래 관련 함수-------------------------------------
     [PunRPC]
     void SetTagger(bool _isTagger)
-    {
-        //술래를 정해주는 RPC
+    {   //술래 불 값 바꿔주기
         isTagger = _isTagger;
         Debug.Log("Tagger " + isTagger);
     }
-
+    
+    //술래가 hit 할 때 쓰는 함수
+    //술래의 PV에서만 실행하는 함수로, 얘에서만 랜덤값 만드는 함수 돌려서 
+    //그 값을 나머지 PV에 뿌려줌 (이렇게 안하면..랜덤값이 다 제각각이여) 
     public void HitPlayer()
     {
         Camera mainCamera = FindObjectOfType<Camera>();
         RaycastHit hitObj;
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        //레이 쏠 때 시작 위치를 화면 정중앙으로 설정
         ray.origin = mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,0f));
-
         Debug.DrawRay(ray.origin, ray.direction * 150, Color.red, 3f);
+        //화면 정중앙에서 마우스 클릭 위치의 좌표값 방향으로 레이 쏘기
         if (Physics.Raycast(ray.origin, ray.direction, out hitObj, Mathf.Infinity))
         {
-            //레이에 맞은 물체가 player인가? 맞다면 player 정보 갖고오기
+            //레이에 맞은 물체가 player 스크립트 갖고 있으면
             if(hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>())
-            {
+            {   //player 리스트 안에서
                 for(int i = 0; i < gameMng.players.Count; i++)
-                {
+                {   //레이 맞은 오브젝트의 player와 같은 것 찾기
                     if(gameMng.players[i] == hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>())
                     {
                         Debug.Log(hitObj.transform.gameObject);
-                        
+                        //다음 술래를 맞은 오브젝트로
                         gameMng.nextTagger = i;
                         Debug.Log(gameMng.nextTagger);
+                        //각각 플레이어의 오브젝트 랜덤 생성을 위한 번호 & 랜덤 벡터값 생성 
                         gameMng.MakeRandomNum();
+                        //카메라 조정 코루틴 & 새 랜덤 오브젝트로 교체
                         PV.RPC("WhenTaggerHitPlayerFunc", RpcTarget.All); 
                         break;
                     }
@@ -240,25 +249,25 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
-
+    //카메라 코루틴 함수 불러오기
     [PunRPC]
     public void WhenTaggerHitPlayerFunc()
     {
         gameMng.WhenTaggerHitPlayer();
     }
-
+    //생성된 랜덤 숫자를 리스트에 넣어줌 
     [PunRPC]
-    public void addRandumNum(int ranNum)
+    public void addRandomNum(int ranNum)
     {
         gameMng.RandomNums.Add(ranNum);
     }
-
+    //생성된 랜덤 벡터를 리스트에 넣어줌
     [PunRPC]
-    public void addRandumVec(Vector3 ranVec)
+    public void addRandomVec(Vector3 ranVec)
     {
         gameMng.RandomVecs.Add(ranVec);
     }
-
+    //카메라 다시 1인칭으로 바꿔주기
     [PunRPC]
     public void ResetCamera()
     {

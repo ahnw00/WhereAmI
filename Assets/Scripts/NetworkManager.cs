@@ -62,6 +62,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 			}
             //입장한 플레이어 리스트에 추가
 			playerListEntries.Add(p.ActorNumber, entry);
+            
 		}
     }
 

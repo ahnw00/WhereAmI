@@ -28,15 +28,15 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void PickFirstTagger()
     {
-        //PlayerController달고있는 애들 리스트화 시키기
+        //Player 달고있는 애들 리스트화 시키기
         List<Player> PlayerList = new List<Player>(players);
         //그중에 하나 술래로 정해주기
         whichPlayerIsTagger = Random.Range(0, PlayerList.Count);
-        //플레이어 몇명인지 , 누가 술래인지 체크
+        //해당 사람 술래로 지정
+        players[whichPlayerIsTagger].GetComponent<PhotonView>().RPC("SetTagger", RpcTarget.All, true);
+        
         Debug.Log("We have " + PlayerList.Count);
         Debug.Log("술래 Number is " + whichPlayerIsTagger);
-        //해당 사람이 술래로 지정
-        players[whichPlayerIsTagger].GetComponent<PhotonView>().RPC("SetTagger", RpcTarget.All, true);
     }
 
     public void WhenTaggerHitPlayer()
@@ -61,41 +61,44 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if(timer >= 1)
             {
+                //타이머 끝나면 랜덤 오브젝트 생성
                 MakeNewObj();
             }
         }
     }
+
+    //새 오브젝트 생성 & 이전꺼 파괴 & 카메라 원래대로
     public void MakeNewObj()
     {
-        List<Player> PlayerList = new List<Player>(players);
-        int i = 0;
-        foreach(Player plyr in PlayerList)
+        for(int i = 0; i < players.Count; i++)
         {
-            InstantiateObj(plyr, RandomNums[i], RandomVecs[i]);
-            Destroy(plyr.gameObject.transform.GetChild(2).gameObject);
-            plyr.GetComponent<PhotonView>().RPC("ResetCamera", RpcTarget.All);
-            i++;
+            InstantiateObj(players[i], RandomNums[i], RandomVecs[i]);
+            Destroy(players[i].gameObject.transform.GetChild(2).gameObject);
+            players[i].GetComponent<PhotonView>().RPC("ResetCamera", RpcTarget.All);
         }
     }
 
-    public void MakeRandomNum()
-    {
-        List<Player> PlayerList = new List<Player>(players);
-        for(int i=0; i<PlayerList.Count; i++)
-        {
-            int randomNum = Random.Range(0, playableObjects.Count);
-            players[i].GetComponent<PhotonView>().RPC("addRandumNum", RpcTarget.All, randomNum);
-            Vector3 randomVec = networkMng.RandomSpawnPoint();
-            players[i].GetComponent<PhotonView>().RPC("addRandumVec", RpcTarget.All, randomVec);
-        }
-    }
-
+    //새 랜덤 오브젝트 생성
     public void InstantiateObj(Player plyr, int randomNum, Vector3 ranVec)
-    {
+    { 
+        //playableObjects[랜덤 숫자]의 자식에 있는 오브젝트 프리펩만 생성 
         GameObject spawnedObj = Instantiate(playableObjects[randomNum].gameObject.transform.GetChild(2).gameObject, plyr.gameObject.transform.position, Quaternion.identity);
+        //player오브젝트의 자식으로 넣어줌
         spawnedObj.transform.SetParent(plyr.gameObject.transform);
         plyr.playerTr = spawnedObj.transform;
+        //위치도 랜덤 위치로 재설정
         plyr.gameObject.transform.localPosition = ranVec;
     }
-    
+
+    //playableObjects의 인덱스를 위한 랜덤 숫자 & 랜덤 위치값 생성 
+    public void MakeRandomNum()
+    {
+        for(int i=0; i < players.Count; i++)
+        {
+            int randomNum = Random.Range(0, playableObjects.Count);
+            players[i].GetComponent<PhotonView>().RPC("addRandomNum", RpcTarget.All, randomNum);
+            Vector3 randomVec = networkMng.RandomSpawnPoint();
+            players[i].GetComponent<PhotonView>().RPC("addRandomVec", RpcTarget.All, randomVec);
+        }
+    } 
 }
