@@ -60,6 +60,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if(timer >= 1)
             {
+                if(RandomNums != null)
+                {
+                    RandomNums.Clear();
+                    RandomVecs.Clear();
+                }
                 //타이머 끝나면 랜덤 오브젝트 생성
                 MakeNewObj();
             }
