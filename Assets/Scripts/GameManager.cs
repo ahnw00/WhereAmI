@@ -74,7 +74,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             InstantiateObj(players[i], RandomNums[i], RandomVecs[i]);
             Destroy(players[i].gameObject.transform.GetChild(2).gameObject);
-            players[i].GetComponent<PhotonView>().RPC("ResetCamera", RpcTarget.All);
+            foreach(PhotonView pv in FindObjectsOfType<PhotonView>())
+            {
+                if(pv.IsMine)
+                {
+                    pv.gameObject.GetComponent<Player>().ResetCamera();
+                    break;
+                }
+            }
         }
     }
 

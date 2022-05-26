@@ -268,7 +268,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         gameMng.RandomVecs.Add(ranVec);
     }
     //카메라 다시 1인칭으로 바꿔주기
-    [PunRPC]
     public void ResetCamera()
     {
         Camera cam = FindObjectOfType<Camera>();
