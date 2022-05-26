@@ -230,16 +230,20 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         {
             //레이에 맞은 물체가 player 스크립트 갖고 있으면
             if(hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>())
-            {   //player 리스트 안에서
+            {  
+                Debug.Log("레이캐스트");
+                 //player 리스트 안에서
                 for(int i = 0; i < gameMng.players.Count; i++)
                 {   //레이 맞은 오브젝트의 player와 같은 것 찾기
+                    Debug.Log("for");
+                    Debug.Log(gameMng.players.Count);
                     if(gameMng.players[i] == hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>()
                         && i != gameMng.whichPlayerIsTagger)
                     {
-                        Debug.Log(hitObj.transform.gameObject);
+                        Debug.Log("if");
                         //다음 술래를 맞은 오브젝트로
                         gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, false);
-                        gameMng.whichPlayerIsTagger = i;
+                        PV.RPC("ChangewhichPlayerIsTagger", RpcTarget.All, i);
                         gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, true);
                         Debug.Log("whichPlayerIsTagger" + gameMng.whichPlayerIsTagger);
                         //각각 플레이어의 오브젝트 랜덤 생성을 위한 번호 & 랜덤 벡터값 생성 
@@ -278,6 +282,11 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             gameMng.RandomNums.Clear();
             gameMng.RandomVecs.Clear();
         }
+    }
+    [PunRPC]
+    public void ChangewhichPlayerIsTagger(int i)
+    {
+        gameMng.whichPlayerIsTagger = i;
     }
     
     //카메라 다시 1인칭으로 바꿔주기
