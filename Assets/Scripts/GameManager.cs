@@ -60,11 +60,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if(timer >= 1)
             {
-                if(RandomNums != null)
-                {
-                    RandomNums.Clear();
-                    RandomVecs.Clear();
-                }
                 //타이머 끝나면 랜덤 오브젝트 생성
                 MakeNewObj();
             }
@@ -104,6 +99,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     //playableObjects의 인덱스를 위한 랜덤 숫자 & 랜덤 위치값 생성 
     public void MakeRandomNum()
     {
+        for(int i=0; i < players.Count; i++)
+        {
+            players[i].GetComponent<PhotonView>().RPC("ClearRandomList", RpcTarget.All);
+        }
         for(int i=0; i < players.Count; i++)
         {
             int randomNum = Random.Range(0, playableObjects.Count);

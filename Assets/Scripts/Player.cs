@@ -270,6 +270,16 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     {
         gameMng.RandomVecs.Add(ranVec);
     }
+    [PunRPC]
+    public void ClearRandomList()
+    {
+        if(gameMng.RandomNums != null)
+        {
+            gameMng.RandomNums.Clear();
+            gameMng.RandomVecs.Clear();
+        }
+    }
+    
     //카메라 다시 1인칭으로 바꿔주기
     public void ResetCamera()
     {
@@ -278,6 +288,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         cam.transform.localPosition = new Vector3(0, 1.2f, -3);
         cam.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
     }
+    
 //--------------------------오브젝트 파괴 함수------------------------------------
     [PunRPC]
     void DestroyRPC() => Destroy(this.gameObject);
