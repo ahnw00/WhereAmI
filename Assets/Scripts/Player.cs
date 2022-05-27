@@ -94,6 +94,18 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         {
             isJump = false;
         }
+        if(collision.gameObject.tag == "Hell")
+        {
+            //다음 술래를 맞은 오브젝트로
+            gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, false);
+            PV.RPC("ChangewhichPlayerIsTagger", RpcTarget.All, gameObject.GetComponent<PhotonView>().ViewID / 1000 -1);
+            gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, true);
+            Debug.Log("whichPlayerIsTagger" + gameMng.whichPlayerIsTagger);
+            //각각 플레이어의 오브젝트 랜덤 생성을 위한 번호 & 랜덤 벡터값 생성 
+            gameMng.MakeRandomNum();
+            //카메라 조정 코루틴 & 새 랜덤 오브젝트로 교체
+            PV.RPC("WhenTaggerHitPlayerFunc", RpcTarget.All); 
+        }
     }
 
     private void GetInput()
