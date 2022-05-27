@@ -13,6 +13,9 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
     public TextMeshPro nickNameText;
     public Transform cameraArm; 
     public Transform playerTr;
+    AudioSource playerAudioSource;
+    [SerializeField] AudioClip japClip;
+    [SerializeField] AudioClip hitClip;
 
     bool isJump = false;
     float speed = 4f;
@@ -60,6 +63,7 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             timer.GameStartButton.onClick.AddListener(() =>{ ReadyTimer(); });
         }
         gameMng.players[gameObject.GetComponent<PhotonView>().ViewID / 1000 -1] = this;
+        playerAudioSource = this.GetComponent<AudioSource>();
     }
     
     void Update()
@@ -100,7 +104,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
             gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, false);
             PV.RPC("ChangewhichPlayerIsTagger", RpcTarget.All, gameObject.GetComponent<PhotonView>().ViewID / 1000 -1);
             gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, true);
-            Debug.Log("whichPlayerIsTagger" + gameMng.whichPlayerIsTagger);
             //각각 플레이어의 오브젝트 랜덤 생성을 위한 번호 & 랜덤 벡터값 생성 
             gameMng.MakeRandomNum();
             //카메라 조정 코루틴 & 새 랜덤 오브젝트로 교체
@@ -218,12 +221,16 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         }
     }  
 
+    public void TextOff()
+    {
+        transform.GetChild(0).gameObject.SetActive(false);
+    }
+
 //-----------------------------술래 관련 함수-------------------------------------
     [PunRPC]
     void SetTagger(bool _isTagger)
     {   //술래 불 값 바꿔주기
         isTagger = _isTagger;
-        Debug.Log("Tagger " + isTagger);
     }
     
     //술래가 hit 할 때 쓰는 함수
@@ -238,26 +245,26 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         ray.origin = mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,0f));
         Debug.DrawRay(ray.origin, ray.direction * 150, Color.red, 3f);
         //화면 정중앙에서 마우스 클릭 위치의 좌표값 방향으로 레이 쏘기
+        playerAudioSource.clip = japClip;
+        playerAudioSource.Play();
         if (Physics.Raycast(ray.origin, ray.direction, out hitObj, Mathf.Infinity))
         {
             //레이에 맞은 물체가 player 스크립트 갖고 있으면
             if(hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>())
-            {  
-                Debug.Log("레이캐스트");
+            {
+                Player hitPlayer = hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>();
+                hitPlayer.playerAudioSource.clip = hitClip;
+                hitPlayer.playerAudioSource.Play();
                  //player 리스트 안에서
                 for(int i = 0; i < gameMng.players.Count; i++)
                 {   //레이 맞은 오브젝트의 player와 같은 것 찾기
-                    Debug.Log("for");
-                    Debug.Log(gameMng.players.Count);
                     if(gameMng.players[i] == hitObj.collider.gameObject.transform.parent.transform.GetComponent<Player>()
                         && i != gameMng.whichPlayerIsTagger)
                     {
-                        Debug.Log("if");
                         //다음 술래를 맞은 오브젝트로
                         gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, false);
                         PV.RPC("ChangewhichPlayerIsTagger", RpcTarget.All, i);
                         gameMng.ChangeTagger(gameMng.whichPlayerIsTagger, true);
-                        Debug.Log("whichPlayerIsTagger" + gameMng.whichPlayerIsTagger);
                         //각각 플레이어의 오브젝트 랜덤 생성을 위한 번호 & 랜덤 벡터값 생성 
                         gameMng.MakeRandomNum();
                         //카메라 조정 코루틴 & 새 랜덤 오브젝트로 교체

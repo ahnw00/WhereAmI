@@ -9,6 +9,9 @@ public class Timer : MonoBehaviourPunCallbacks
     public Text readyTimerText;
     float readyTimer =  5;
     bool isPlaying;
+    [SerializeField] GameObject waterTiles;
+    [SerializeField] GameObject barrierPlanes;
+    [SerializeField] AudioSource timerSource;
 
     PlayerListing playerListing;
     public Button GameStartButton;
@@ -31,11 +34,12 @@ public class Timer : MonoBehaviourPunCallbacks
         readyTimer = 5f;
         isPlaying = true;
         readyTimerText.gameObject.SetActive(true);
+        timerSource.Play();
 
         while (readyTimer > 0 && isPlaying)
         {
             readyTimer -= Time.deltaTime / PhotonNetwork.PlayerList.Length;
-            readyTimerText.text = (int)readyTimer +1 + " 초 뒤 게임이 시작됩니다";
+            readyTimerText.text = (int)readyTimer + 1 + " 초 뒤 게임이 시작됩니다";
             yield return null;
 
             if (readyTimer <= 0)
@@ -44,7 +48,25 @@ public class Timer : MonoBehaviourPunCallbacks
                 Invoke("GameStartOff", 2.0f);
             }
         }
-        Debug.Log("coroutine");
+        TurnOffMeshColliders(waterTiles);
+        TurnOffMeshColliders(barrierPlanes);
+        NickNamesOff();
+    }
+
+    void TurnOffMeshColliders(GameObject go)
+    {
+        foreach(MeshCollider mc in go.GetComponentsInChildren<MeshCollider>())
+        {
+            mc.enabled = false;
+        }
+    }
+
+    void NickNamesOff()
+    {
+        foreach(Player player in gameMng.players)
+        {
+            player.TextOff();
+        }
     }
 
     void GameStartOff()

@@ -66,11 +66,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 		}
     }
 
-    public void Spawn()
-    {
-        PhotonNetwork.Instantiate("PlayerObject", new Vector3(Random.Range(60, 96), 80f, Random.Range(-3, 32)), Quaternion.identity);
-    }
-
     //랜덤 아바타 스폰 함수
     public void RandomSpawn()
     {

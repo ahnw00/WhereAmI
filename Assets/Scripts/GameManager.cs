@@ -6,7 +6,6 @@ using Photon.Pun;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    public static GameManager instance;
     public List<GameObject> playableObjects;
     [HideInInspector] public bool isRoundEnded;
     [SerializeField] private GameObject camWaitingPoint;
@@ -35,8 +34,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         List<Player> PlayerList = new List<Player>(players);
         //해당 사람 술래로 지정
         players[i].GetComponent<PhotonView>().RPC("SetTagger", RpcTarget.All, isTagger); 
-        Debug.Log("We have " + PlayerList.Count);
-        Debug.Log("술래 Number is " + whichPlayerIsTagger);
     }
 
     public void WhenTaggerHitPlayer()
@@ -57,7 +54,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         while(timer < 1)
         {
             timer += Time.deltaTime * speed;
-            cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(75.6f, 78.3f, -10), timer);
+            cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(75.6f, 78.3f, 12.14f), timer);
             cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, Quaternion.Euler(0, 0, 0), timer);
             yield return null;
 
