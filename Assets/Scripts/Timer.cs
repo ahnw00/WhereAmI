@@ -55,16 +55,13 @@ public class Timer : MonoBehaviourPunCallbacks
 
     void YouTaggerTextOn()
     {
-        for(int i = 0; i < gameMng.players.Count; i++)
+        foreach(PhotonView pv in FindObjectsOfType<PhotonView>())
         {
-            foreach(PhotonView pv in FindObjectsOfType<PhotonView>())
+            if(pv.IsMine && pv.gameObject.GetComponent<Player>().GetIsTaggerValue())
             {
-                if(pv.IsMine && pv.gameObject.GetComponent<Player>().GetIsTaggerValue())
-                {
-                    gameMng.youTaggerText.gameObject.SetActive(true);
-                    break;
-                }
+                gameMng.youTaggerText.gameObject.SetActive(true);
+                break;
             }
-        }
+        } 
     }
 }
