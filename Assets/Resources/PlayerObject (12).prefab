@@ -293,7 +293,6 @@ MonoBehaviour:
   nickNameText: {fileID: 7676921414000276751}
   cameraArm: {fileID: 2252191526174903069}
   playerTr: {fileID: 582831523676049734}
-  playerAudioSource: {fileID: 0}
   japClip: {fileID: 8300000, guid: 0f5e403d1cdd905488270d74efa09576, type: 3}
   hitClip: {fileID: 0}
   isTagger: 0
