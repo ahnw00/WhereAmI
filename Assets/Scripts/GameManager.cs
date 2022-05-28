@@ -120,5 +120,4 @@ public class GameManager : MonoBehaviourPunCallbacks
             players[i].GetComponent<PhotonView>().RPC("addRandomVec", RpcTarget.All, randomVec);
         }
     } 
-
 }

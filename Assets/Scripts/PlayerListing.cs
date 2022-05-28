@@ -54,7 +54,6 @@ public class PlayerListing : MonoBehaviour
 
     public void SetPlayerInfo(int playerId, string playerName)
     {
-        //Player = player;
         playerNameText.text = playerName;
         ownerId = playerId;
         playerStatusText.text = "준비 중";

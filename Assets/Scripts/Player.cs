@@ -122,10 +122,6 @@ public class Player : MonoBehaviourPunCallbacks, IPunObservable
         y = Input.GetAxis("Mouse Y");
 
         mouseDelta = new Vector2(x, y);
-
-        // isKeyDown[(int)DownKey.JUMP] = Input.GetButtonDown("Jump");
-
-        //attackDelay += Time.deltaTime;
     }
 
     private void LookAt(Transform target)

@@ -40,7 +40,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         DisconnectPanel.SetActive(false);
-        //Spawn();
         RandomSpawn();
         ConnectPanel.SetActive(true);
         
